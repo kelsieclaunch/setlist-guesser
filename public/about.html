@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Play - Parx Predict</title>
+  <meta name="author" content="Kelsie">
+  
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100dvh;
+    }
+
+    .header {
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: rgba(0,0,0,0.85);
+      padding: 10px 20px;
+      border-bottom: 2px solid #fc0fc0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      box-sizing: border-box;
+    }
+
+    .header .logo {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.2em;
+    }
+
+    .navbar {
+      display: flex;
+      gap: 15px;
+    }
+
+    .navbar a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .navbar a:hover {
+      color: #fc0fc0;
+      text-shadow: 0 0 8px #fc0fc0;
+    }
+
+    main {
+      margin-top: 120px;
+      width: 90%;
+      max-width: 700px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 70vh;
+    }
+
+    .placeholder-card {
+      background: rgba(0, 0, 0, 0.85);
+      padding: 40px;
+      border: 3px solid #ffff33;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #ffff33, inset 0 0 10px #fc0fc0;
+      max-width: 650px;
+      width: 100%;
+      box-sizing: border-box;
+      line-height: 1.6;
+    }
+
+    .placeholder-card h2 {
+      color: #fc0fc0;
+      margin-bottom: 25px;
+      font-size: 1.8em;
+      text-align: center;
+    }
+
+    .placeholder-card p {
+      font-size: 1.1em;
+      margin-bottom: 18px;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .back-link a {
+      color: #ffff33;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .back-link a:hover {
+      color: #fc0fc0;
+      text-shadow: 0 0 8px #fc0fc0;
+    }
+
+    @media (max-width: 480px) {
+      .placeholder-card {
+        padding: 30px 20px;
+      }
+
+      .placeholder-card h2 {
+        font-size: 1.5em;
+      }
+
+      .placeholder-card p {
+        font-size: 1em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <a href="home.html" class="logo">Parx Predict</a>
+    <nav class="navbar">
+      <a href="home.html">Home</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="#" id="logout">Logout</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="placeholder-card">
+      <h2>How to Play</h2>
+
+      <p>• I didn't want people to have to connect personal information, so it's not gonna ask for your name or email, which also means there's no “forgot password” option. <strong>Remember it!!</strong></p>
+
+      <p>• The forms for each show open at <strong>9pm two days before the show</strong>. The form closes at <strong>9pm (venue time) on the day of the show</strong>.</p>
+
+      <p>• Surprise songs are worth <strong>2 points</strong>. All other questions are worth <strong>1 point</strong>.</p>
+      <p>• The order you guess surprise songs in doesn't matter. </p>
+      <p>• In case of a tie, the user who completed their guesses first will be ranked higher. </p>
+
+
+
+      <div class="back-link">
+        <a href="index.html">Back to Login</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('logout').addEventListener('click', async (e) => {
+      e.preventDefault();
+      await fetch('/logout', { method: 'POST', credentials: 'include' });
+      window.location.href = '/';
+    });
+  </script>
+
+</body>
+</html>

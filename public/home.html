@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parx Predict</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100dvh;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .header {
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: rgba(0,0,0,0.85);
+      padding: 10px 20px;
+      border-bottom: 2px solid #fc0fc0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      box-sizing: border-box;
+    }
+
+    .header .logo {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.2em;
+    }
+
+    .navbar {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .navbar a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .navbar a:hover {
+      color: #fc0fc0;
+      text-shadow: 0 0 8px #fc0fc0;
+    }
+
+    main {
+      margin-top: 40px;
+      width: 90%;
+      max-width: 700px;
+      text-align: center;
+    }
+
+    .welcome-msg {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+
+    .quiz-card-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .quiz-card {
+      width: 100%;
+      background: rgba(0,0,0,0.85);
+      padding: 30px;
+      border: 3px solid #ffff33;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #ffff33;
+      text-align: center;
+      box-sizing: border-box;
+      transition: 0.2s;
+    }
+
+    .quiz-card:hover {
+      box-shadow: 0 0 20px #ffff33, 0 0 20px #fc0fc0 inset;
+    }
+
+    .quiz-card h3 {
+      margin: 0 0 15px;
+      color: #fc0fc0;
+    }
+
+    .quiz-card p {
+      margin: 10px 0 20px;
+      font-weight: 600;
+      font-size: 1.1em;
+    }
+
+    .quiz-card a {
+      display: inline-block;
+      text-decoration: none;
+      color: #fff;
+      background: #333;
+      padding: 12px 25px;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .quiz-card a:hover:not(.disabled) {
+      background: #fc0fc0;
+      color: #000;
+      box-shadow: 0 0 15px #fc0fc0;
+    }
+
+    .quiz-card a.disabled {
+      background: #555;
+      color: #999;
+      cursor: default;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <a href="home.html" class="logo">Parx Predict</a>
+    <nav class="navbar">
+      <a href="home.html">Home</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="#" id="logout">Logout</a>
+    </nav>
+  </header>
+
+  <main>
+    <p class="welcome-msg" id="welcome-msg"></p>
+    <div id="quiz-card-container" class="quiz-card-container"></div>
+  </main>
+
+  <script>
+  let profile = null;
+
+  // Quiz definitions
+  const quizzes = [
+    
+    { slug: 'norfolk', name: 'Norfolk', date: '11/15', zone: 'America/New_York' },
+    { slug: 'philadelphia', name: 'Philadelphia', date: '11/16', zone: 'America/New_York' },
+    { slug: 'brooklyn', name: 'Brooklyn', date: '11/18', zone: 'America/New_York' },
+    { slug: 'boston', name: 'Boston', date: '11/20', zone: 'America/New_York' },
+    { slug: 'sayreville', name: 'Sayreville', date: '11/22', zone: 'America/New_York' },
+    { slug: 'toronto', name: 'Toronto', date: '11/23', zone: 'America/Toronto' },
+    { slug: 'pittsburgh', name: 'Pittsburgh', date: '11/25', zone: 'America/New_York' },
+    { slug: 'detroit', name: 'Detroit', date: '11/26', zone: 'America/Detroit' },
+    { slug: 'chicago', name: 'Chicago', date: '11/28', zone: 'America/Chicago' },
+    { slug: 'columbus', name: 'Columbus', date: '11/29', zone: 'America/New_York' },
+    { slug: 'stlouis', name: 'St Louis', date: '12/2', zone: 'America/Chicago' },
+    { slug: 'denver', name: 'Denver', date: '12/4', zone: 'America/Denver' },
+    { slug: 'saltlakecity', name: 'Salt Lake City', date: '12/6', zone: 'America/Denver' },
+    { slug: 'seattle', name: 'Seattle', date: '12/8', zone: 'America/Los_Angeles' },
+    { slug: 'portland', name: 'Portland', date: '12/9', zone: 'America/Los_Angeles' },
+    { slug: 'sanfrancisco', name: 'San Francisco', date: '12/12', zone: 'America/Los_Angeles' },
+    { slug: 'sacramento', name: 'Sacramento', date: '12/13', zone: 'America/Los_Angeles' },
+    { slug: 'lasvegas', name: 'Las Vegas', date: '12/15', zone: 'America/Los_Angeles' },
+    { slug: 'phoenix', name: 'Phoenix', date: '12/17', zone: 'America/Phoenix' },
+    { slug: 'losangeles', name: 'Los Angeles', date: '12/18', zone: 'America/Los_Angeles' }
+  ];
+
+  async function checkLogin() {
+    try {
+      const res = await fetch('/profile', { credentials: 'include' });
+      if (!res.ok) return window.location.href = '/';
+      profile = await res.json();
+      document.getElementById('welcome-msg').textContent = `Welcome, ${profile.username}!`;
+    } catch (err) {
+      console.error(err);
+      window.location.href = '/';
+    }
+  }
+
+  function renderQuizCards() {
+    const container = document.getElementById('quiz-card-container');
+    container.innerHTML = '';
+    quizzes.forEach(q => {
+      const card = document.createElement('div');
+      card.className = 'quiz-card';
+
+      const localDate = luxon.DateTime
+        .fromFormat(q.date, 'M/d', { zone: q.zone })
+        .set({ year: luxon.DateTime.now().year })
+        .toLocaleString(luxon.DateTime.DATE_FULL);
+
+
+      card.innerHTML = `
+        <h3>${q.name} - ${localDate}</h3>
+        <p>Status: <span id="${q.slug}-status">Checking...</span></p>
+        <a href="quiz.html?slug=${q.slug}" id="${q.slug}-link">Submit Guesses</a>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  async function updateQuizStatuses() {
+    if (!profile) return;
+
+    for (const quiz of quizzes) {
+      const statusEl = document.getElementById(`${quiz.slug}-status`);
+      const linkEl = document.getElementById(`${quiz.slug}-link`);
+      try {
+        const res = await fetch(`/quiz/${quiz.slug}/status`, { credentials: 'include' });
+        if (!res.ok) {
+          statusEl.textContent = res.status === 401 ? 'Login required' : 'Error';
+          linkEl.classList.add('disabled');
+          continue;
+        }
+
+        const data = await res.json();
+
+        // Default: remove previous score line
+        const existingScoreEl = document.getElementById(`${quiz.slug}-score`);
+        if (existingScoreEl) existingScoreEl.remove();
+
+        // Set status text
+        if (data.status === 'closed') {
+          statusEl.textContent = 'Closed';
+          linkEl.textContent = 'Closed';
+          linkEl.classList.add('disabled');
+        } else if (data.status === 'submitted') {
+          statusEl.textContent = 'Guesses Received';
+          linkEl.textContent = 'Guesses Received';
+          linkEl.classList.add('disabled');
+        } else if (data.status === 'open') {
+          statusEl.textContent = 'Open';
+          statusEl.style.color = 'limegreen';
+          linkEl.textContent = 'Submit Guesses';
+          linkEl.classList.remove('disabled');
+        } else if (data.status === 'not-open-yet') {
+          if (data.opensOn) {
+            const openDate = luxon.DateTime.fromISO(data.opensOn, { zone: quiz.zone })
+                                  .toFormat('MM/dd');
+            statusEl.textContent = `Opens on ${openDate} at 9pm`;
+          } else {
+            statusEl.textContent = 'Opens soon';
+          }
+          linkEl.classList.add('disabled');
+        } else {
+          statusEl.textContent = 'Unknown';
+          linkEl.classList.add('disabled');
+        }
+
+      } catch (err) {
+        console.error(`Error fetching status for ${quiz.slug}:`, err);
+        statusEl.textContent = 'Error';
+        linkEl.classList.add('disabled');
+      }
+    }
+  }
+
+  async function updateScores() {
+    if (!profile) return;
+
+    for (const quiz of quizzes) {
+      try {
+        const res = await fetch(`/quiz/${quiz.slug}/score`, { credentials: 'include' });
+        if (!res.ok) continue;
+
+        const data = await res.json(); // { score: number | null }
+        if (data.score == null) continue;
+
+        const card = document.getElementById(`${quiz.slug}-status`).parentElement;
+
+        // Remove existing score element if any
+        let existingScore = document.getElementById(`${quiz.slug}-score`);
+        if (existingScore) existingScore.remove();
+
+        // Display the score below status
+        const scoreEl = document.createElement('p');
+        scoreEl.id = `${quiz.slug}-score`;
+        scoreEl.textContent = `Score: ${data.score}`;
+        card.appendChild(scoreEl);
+
+        // Update button to "View Results"
+        const linkEl = document.getElementById(`${quiz.slug}-link`);
+        linkEl.textContent = 'View Results';
+        linkEl.href = `/results.html?slug=${quiz.slug}`;
+        linkEl.classList.remove('disabled');
+
+        // Update status text
+        const statusEl = document.getElementById(`${quiz.slug}-status`);
+        statusEl.textContent = 'Guesses Received';
+        
+      } catch (err) {
+        console.error(`Error fetching score for ${quiz.slug}:`, err);
+      }
+    }
+  }
+
+
+
+  document.getElementById('logout').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await fetch('/logout', { method: 'POST', credentials: 'include' });
+    window.location.href = '/';
+  });
+
+  // Initialize
+  checkLogin().then(() => {
+    renderQuizCards();
+    updateQuizStatuses().then(updateScores);
+  });
+  </script>
+
+</body>
+</html>

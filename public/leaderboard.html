@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard - Parx Predict</title>
+  <meta name="author" content="Kelsie">
+
+  <!-- Luxon for date formatting -->
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100dvh;
+    }
+
+    /* HEADER */
+    .header {
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: rgba(0,0,0,0.85);
+      padding: 10px 20px;
+      border-bottom: 2px solid #fc0fc0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      box-sizing: border-box;
+    }
+
+    .header .logo {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.2em;
+    }
+
+    .navbar {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .navbar a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .navbar a:hover {
+      color: #fc0fc0;
+      text-shadow: 0 0 8px #fc0fc0;
+    }
+
+    /* MAIN CONTENT */
+    main {
+      margin-top: 120px;
+      width: 90%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      align-items: center;
+      padding-bottom: 50px;
+    }
+
+    /* MATCH HOME PAGE CARD STYLE */
+    .quiz-card {
+      width: 100%;
+      background: rgba(0,0,0,0.85);
+      padding: 30px;
+      border: 3px solid #ffff33;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #ffff33;
+      text-align: left;
+      box-sizing: border-box;
+      transition: 0.2s;
+    }
+
+    .quiz-card:hover {
+      box-shadow: 0 0 20px #ffff33, 0 0 20px #fc0fc0 inset;
+    }
+
+    /* Empty-state card */
+    .placeholder-card {
+      background: rgba(0,0,0,0.85);
+      padding: 40px;
+      border: 3px solid #ffff33;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #ffff33;
+      text-align: center;
+      width: 100%;
+      max-width: 600px;
+      box-sizing: border-box;
+    }
+
+    .placeholder-card h2 {
+      color: #fc0fc0;
+      margin-bottom: 20px;
+      font-size: 1.8em;
+    }
+
+    .placeholder-card p {
+      font-size: 1.2em;
+      font-weight: 600;
+    }
+
+    /* Leaderboard list */
+    .leaderboard-entry {
+      font-size: 1em;
+      padding: 6px 0;
+      border-bottom: 1px solid #555;
+    }
+
+    .leaderboard-entry:last-child {
+      border-bottom: none;
+    }
+
+    @media (max-width: 480px) {
+      .quiz-card {
+        padding: 22px;
+      }
+      .placeholder-card {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+
+</head>
+<body>
+
+  <header class="header">
+    <a href="home.html" class="logo">Parx Predict</a>
+    <nav class="navbar">
+      <a href="home.html">Home</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="#" id="logout">Logout</a>
+    </nav>
+  </header>
+
+  <main id="leaderboard-container">
+    <!-- Cards inserted here via JS -->
+  </main>
+
+  <script>
+    const quizConfigs = {
+        norfolk:       { quizId: 3,  showDateISO: '2025-11-15T21:00:00' },
+        philadelphia:  { quizId: 4,  showDateISO: '2025-11-16T21:00:00' },
+        brooklyn:      { quizId: 5,  showDateISO: '2025-11-18T21:00:00' },
+        boston:        { quizId: 6,  showDateISO: '2025-11-20T21:00:00' },
+        sayreville:    { quizId: 7,  showDateISO: '2025-11-22T21:00:00' },
+        toronto:       { quizId: 8,  showDateISO: '2025-11-23T21:00:00' },
+        pittsburgh:    { quizId: 9,  showDateISO: '2025-11-25T21:00:00' },
+        detroit:       { quizId: 10, showDateISO: '2025-11-26T21:00:00' },
+        chicago:       { quizId: 11, showDateISO: '2025-11-28T21:00:00' },
+        columbus:      { quizId: 12, showDateISO: '2025-11-29T21:00:00' },
+        stlouis:       { quizId: 13, showDateISO: '2025-12-02T21:00:00' },
+        denver:        { quizId: 14, showDateISO: '2025-12-04T21:00:00' },
+        saltlakecity:  { quizId: 15, showDateISO: '2025-12-06T21:00:00' },
+        seattle:       { quizId: 16, showDateISO: '2025-12-08T21:00:00' },
+        portland:      { quizId: 17, showDateISO: '2025-12-09T21:00:00' },
+        sanfrancisco:  { quizId: 18, showDateISO: '2025-12-12T21:00:00' },
+        sacramento:    { quizId: 19, showDateISO: '2025-12-13T21:00:00' },
+        lasvegas:      { quizId: 20, showDateISO: '2025-12-15T21:00:00' },
+        phoenix:       { quizId: 21, showDateISO: '2025-12-17T21:00:00' },
+        losangeles:    { quizId: 22, showDateISO: '2025-12-18T21:00:00' }
+        };
+    async function loadLeaderboard() {
+        const container = document.getElementById('leaderboard-container');
+
+        let quizzes;
+        try {
+            const res = await fetch('/api/quizzes');
+            quizzes = await res.json();
+        } catch (err) {
+            container.innerHTML = `
+            <div class="placeholder-card">
+                <h2>Error</h2>
+                <p>Unable to load leaderboard data.</p>
+            </div>`;
+            return;
+        }
+
+        // Filter only scored quizzes
+        let scored = quizzes.filter(q => q.scored === true);
+
+        if (scored.length === 0) {
+            container.innerHTML = `
+            <div class="placeholder-card">
+                <h2>Leaderboard</h2>
+                <p>Leaderboard will be available once the first show is scored.</p>
+            </div>`;
+            return;
+        }
+
+        // Sort by quiz date descending (newest first)
+        scored.sort((a, b) => {
+            const cfgA = quizConfigs[a.shortId];
+            const cfgB = quizConfigs[b.shortId];
+
+            // Fallback to q.date if needed
+            const dateA = cfgA?.showDateISO ? new Date(cfgA.showDateISO) : new Date();
+            const dateB = cfgB?.showDateISO ? new Date(cfgB.showDateISO) : new Date();
+
+            return dateB - dateA; // newest first
+        });
+
+        container.innerHTML = ""; // clear placeholder
+
+        scored.forEach(q => {
+            const entries = q.leaderboard?.slice(0, 3) || [];
+            const card = document.createElement('div');
+            card.className = "quiz-card";
+
+            // Display "Norfolk - 11/15"
+            const cfg = quizConfigs[q.shortId];
+            const dateObj = cfg?.showDateISO ? new Date(cfg.showDateISO) : new Date();
+            const dateDisplay = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+            let html = `<h2 style="margin-top:0; color:#fc0fc0;">${q.name} - ${dateDisplay}</h2>`;
+
+
+            if (entries.length === 0) {
+            html += `<p>No results yet for this show.</p>`;
+            } else {
+            html += `<div>`;
+            entries.forEach((entry, i) => {
+                html += `
+                <div class="leaderboard-entry">
+                    <strong>${i + 1}. ${entry.username}</strong> — ${entry.score} pts
+                </div>
+                `;
+            });
+            html += `</div>`;
+            }
+
+            card.innerHTML = html;
+            container.appendChild(card);
+        });
+        }
+
+    loadLeaderboard();
+
+    // Logout
+    document.getElementById('logout').addEventListener('click', async (e) => {
+      e.preventDefault();
+      await fetch('/logout', { method: 'POST', credentials: 'include' });
+      window.location.href = '/';
+    });
+  </script>
+
+</body>
+</html>

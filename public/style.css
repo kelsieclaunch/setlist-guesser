@@ -1,0 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Header */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    padding: 20px;
+    background: #000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    border-bottom: 2px solid #fc0fc0;
+    box-sizing: border-box;
+}
+
+.logo {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.3em;
+}
+
+.navbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.navbar a:hover {
+    color: #fc0fc0;
+    text-shadow: 0 0 8px #fc0fc0;
+}
+
+/* Body background and center container */
+body {
+    min-height: 100dvh;
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* align cards below header */
+    padding-top: 150px; /* space for header */
+}
+
+/* Center container for login/register cards */
+.auth-container {
+    position: relative;
+    width: 400px;
+    height: 500px;
+}
+
+/* Login/Register forms */
+.form-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    border: 5px solid #ffff33;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #ffff33, inset 0 0 20px #ffff33;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    padding-top: 30px;
+}
+
+.form-box.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Headings */
+h2 {
+    font-size: 2em;
+    text-align: center;
+    color: #fc0fc0;
+}
+
+/* Input boxes */
+.input-box {
+    position: relative;
+    width: 320px;
+    margin: 20px 0;
+}
+
+.input-box input {
+    width: 100%;
+    height: 50px;
+    background: transparent;
+    border: 2px solid #333;
+    outline: none;
+    border-radius: 5px;
+    font-size: 1em;
+    color: #fff;
+    padding-left: 35px;
+}
+
+.input-box input::placeholder {
+    color: rgba(255,255,255,0.3);
+}
+
+.input-box .icon {
+    position: absolute;
+    left: 10px;
+    color: #fff;
+    font-size: 1.2em;
+    line-height: 50px;
+}
+
+/* Buttons */
+button {
+    width: 100%;
+    height: 45px;
+    background: #333;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 1em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #fc0fc0;
+    color: #000;
+    box-shadow: 0 0 20px #fc0fc0;
+}
+
+/* Links below forms */
+.register-link, .login-link {
+    font-size: 0.9em;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.register-link p, .login-link p {
+    color: #fff;
+}
+
+.register-link a, .login-link a {
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.register-link a:hover, .login-link a:hover {
+    color: #fc0fc0;
+    text-decoration: underline;
+}
+
+
+/* How to Play link */
+
+.about-link {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+.about-link a {
+    display: inline-block;
+    padding: 8px 18px;
+    border: 2px solid #ffff33;
+    border-radius: 8px;
+    color: #ffff33;
+    font-weight: 600;
+    font-size: 0.95em;
+    text-decoration: none;
+    text-shadow: 0 0 8px #ffff33;
+    box-shadow: 0 0 12px #ffff33, inset 0 0 10px #ffff33;
+    transition: 0.25s;
+}
+
+.about-link a:hover {
+    background: #fc0fc0;
+    border-color: #fc0fc0;
+    color: #000;
+    text-shadow: 0 0 12px #fc0fc0;
+    box-shadow: 0 0 18px #fc0fc0, inset 0 0 12px #fc0fc0;
+    transform: scale(1.05);
+}

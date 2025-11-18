@@ -21,19 +21,19 @@ Auth: Express session, bcrypt
 Hosting: Google Cloud Run, Docker
 
 ## Screenshots
-Login Page
+##### Login Page
 <img src="assets/login_page.png" width="600" alt="Login page" />
 
-Home Screen
+##### Home Screen
 <img src="assets/home_screen.png" width="600" alt="Home screen with all shows" /> 
 
-How to Play
+##### How to Play
 <img src="assets/how_to_play.png" width="600" alt="Instructions explaining how to play the setlist prediction game" />
 
-Submission Form
+##### Submission Form
 <img src="assets/submission_form.png" width="600" alt="Quiz submission form for predicting setlist answers" />
 
-Results Page
+##### Results Page
 <img src="assets/results_page.png" width="600" alt="Results page showing user's guesses compared to correct answers with score display" />
 
 ### Current Impact

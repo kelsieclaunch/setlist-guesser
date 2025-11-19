@@ -1,3 +1,87 @@
+const surpriseSongs = [
+  "Last Heaven",
+  "Sorry As I'll Ever Be",
+  "Lemonade",
+  "Perfect Posture",
+  "Glitter Times",
+  "Read My Mind",
+  "LIFE IS PUKE (20,000)",
+  "Teenage Jealousy",
+  "Noise",
+  "Play",
+  "Beating Heart Baby",
+  "rainy days in la",
+  "Candy",
+  "What We Do For Fun",
+  "Fantastic",
+  "They All Float",
+  "Silver",
+  "I Was Hiding Under Your Porch Because I Love You",
+  "Bones of '92",
+  "I'm a Natural Blue",
+  "Night Maps",
+  "New Wave",
+  "Easter Egg",
+  "American History",
+  "Christmas",
+  "No Capes",
+  "Pink",
+  "Territory",
+  "Mad All The Time",
+  "Crave",
+  "I'll Always Be Around",
+  "Plum Island",
+  "It Follows",
+  "Little Violence",
+  "Powerless",
+  "Dizzy",
+  "Made in America",
+  "Take Her to the Moon",
+  "Royal",
+  "Hawaii (Stay Awake)",
+  "Sleep Alone",
+  "Rare",
+  "We Need to Talk",
+  "11:11",
+  "Zone Out",
+  "Worst",
+  "War Crimes",
+  "Never Bloom Again",
+  "Group Chat",
+  "Easy To Hate",
+  "Watch What Happens Next",
+  "Cherry Red",
+  "See You In In The Future",
+  "Ice Bath",
+  "Crying Over It All",
+  "Magnetic",
+  "Fruit Roll Ups",
+  "You'd Be Paranoid Too",
+  "American Graffiti",
+  "The Secret Life of Me",
+  "Just Kidding",
+  "Snow Globe",
+  "Violet!",
+  "Numb",
+  "Fuzzy",
+  "Lowkey As Hell",
+  "A Night Out On Earth",
+  "Closer",
+  "Ritual",
+  "Self-Sabotage",
+  "End of the Water (Feel)",
+  "2 Best Friends",
+  "Brainwashed",
+  "ST*RFUCKER",
+  "SOULSUCKER",
+  "Talking to Myself",
+  "Call Me Beep Me",
+  "Forget",
+  "give me a break!",
+  "Gwen Stefani"
+];
+
+
 document.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const quizSlug = urlParams.get("slug");
@@ -63,6 +147,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const title = quizTitles[quizSlug] || quizTitles.default || "Quiz";
     quizTitle.textContent = title;
 
+    // Update alert
+    const updateNote = document.createElement("p");
+    updateNote.textContent = "Update: try rolling the dice to generate a random guess";
+    updateNote.style.fontStyle = "italic";
+    updateNote.style.color = "#d63384"; // pink
+    updateNote.style.fontSize = "0.9rem";
+    updateNote.style.marginTop = "4px";
+    quizTitle.insertAdjacentElement("afterend", updateNote);
+
     quizForm.innerHTML = ""; // Clear existing
 
     const questions = quizQuestions.default.questions;
@@ -88,16 +181,30 @@ document.addEventListener("DOMContentLoaded", async () => {
           div.appendChild(label);
         });
       } else if (q.type === "text") {
+        const wrapper = document.createElement("div");
+        wrapper.className = "surprise-wrapper";
+
         const label = document.createElement("label");
         label.setAttribute("for", q.name);
         label.textContent = q.q;
+
         const input = document.createElement("input");
         input.type = "text";
         input.name = q.name;
         input.id = q.name;
         input.placeholder = "Enter your guess";
+        input.className = "surprise-input";
+
+        const diceBtn = document.createElement("button");
+        diceBtn.type = "button";
+        diceBtn.className = "dice-btn";
+        diceBtn.innerHTML = `<ion-icon name="dice"></ion-icon>`;
+
+        wrapper.appendChild(input);
+        wrapper.appendChild(diceBtn);
+
         div.appendChild(label);
-        div.appendChild(input);
+        div.appendChild(wrapper);
       }
 
       quizForm.appendChild(div);
@@ -133,6 +240,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 }
 
+  function getRandomNonDuplicateSong(currentInput, allInputs) {
+    // Get songs used in other inputs
+    const usedInOtherInputs = Array.from(allInputs)
+      .filter(input => input !== currentInput)
+      .map(input => input.value.trim())
+      .filter(val => val !== "");
+
+    const availableSongs = surpriseSongs.filter(song => !usedInOtherInputs.includes(song));
+
+    if (availableSongs.length === 0) return currentInput.value;
+
+    return availableSongs[Math.floor(Math.random() * availableSongs.length)];
+  }
+
+  // Dice button click handler
+  document.addEventListener("click", function (e) {
+    if (e.target.closest(".dice-btn")) {
+      const input = e.target.closest(".surprise-wrapper").querySelector(".surprise-input");
+      const allInputs = document.querySelectorAll(".surprise-input");
+
+      input.value = getRandomNonDuplicateSong(input, allInputs);
+      input.focus();
+    }
+  });
+
+
   // --- Handle submission ---
   quizForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -164,3 +297,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   await checkLogin();
   renderQuizForm();
 });
+
+
+

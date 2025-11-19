@@ -3,13 +3,14 @@ An interactive full-stack web application where fans predict concert setlists, s
 
 ## Gameplay and Scoring
 - Users predict setlists for specific tour dates using a quiz-style form
-- Automatic scoring with weighted Surprise Song logic
+- Automatic scoring with weighted surprise song logic
 - Dynamic result pages showing user guesses vs. correct setlist
 - Manual score adjustments possible via Cloud SQL
 
 ## User Experience
 - User registration, login, and session authentication
 - Mobile-responsive design for gameplay on concert days
+- Random guess generator for surprise song ideas.
 - Personalized dashboard and results history
 - Leaderboard displaying top-scoring participants
 
@@ -42,6 +43,7 @@ Hosting: Google Cloud Run, Docker
 
 ### Future Enhancement
 - Support for multiple tour legs (UK/EU dates)
+- Show popularity of past surprise songs
 
 ### Acknowledgements
 - Inspired by SwiftAlert/Mastermind for The Eras Tour

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Parx Predict Quiz</title>
+<title>Parx Predict</title>
 <!-- <link rel="stylesheet" href="style.css"> -->
 <style>
 /* Body */
@@ -140,6 +140,49 @@ button[type="submit"]:hover {
   box-shadow: 0 0 15px #fc0fc0;
 }
 
+/* random surprise song guess */
+
+.dice-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  transition: transform 0.2s ease;
+}
+
+.dice-btn ion-icon {
+  font-size: 24px;
+  color: #fc0fc0;
+  transition: color 0.3s ease, filter 0.3s ease, transform 0.2s ease;
+}
+
+/* Glow + scale on hover */
+.dice-btn:hover ion-icon {
+  color: #ff66ff; /* Slightly brighter pink */
+  filter: drop-shadow(0 0 6px #ff66ff);
+  transform: scale(1.15);
+}
+
+/* shrink back when clicked */
+.dice-btn:active ion-icon {
+  transform: scale(0.95);
+  filter: drop-shadow(0 0 2px #ff66ff);
+}
+
+.surprise-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.surprise-input {
+  flex: 1;
+}
+
+
+
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .quiz-container {
@@ -180,5 +223,8 @@ button[type="submit"]:hover {
 </main>
 
 <script src="quiz.js" type="module"></script>
+<!-- <ion-icon name="dice"></ion-icon> -->
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </body>
 </html>

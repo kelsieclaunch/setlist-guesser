@@ -38,12 +38,12 @@ Hosting: Google Cloud Run, Docker
 <img src="assets/results_page.png" width="600" alt="Results page showing user's guesses compared to correct answers with score display" />
 
 ### Current Impact
-- 70+ registered users
+- 80+ registered users
 - Supports multiple tour dates dynamically
 
 ### Future Enhancement
 - Support for multiple tour legs (UK/EU dates)
-- Show popularity of past surprise songs
+- Show popularity of past surprise songs, currently being implemented in setlisttrends.html/setlisttrends.js
 
 ### Acknowledgements
 - Inspired by SwiftAlert/Mastermind for The Eras Tour

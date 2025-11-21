@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Setlist Trends</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      background: black;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100dvh;
+    }
+
+    .header {
+      width: 100vw;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: rgba(0,0,0,0.85);
+      padding: 20px;
+      border-bottom: 2px solid #fc0fc0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: border-box;
+      z-index: 1000;
+    }
+
+    .header .logo {
+      color: white;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.3em;
+    }
+
+    .navbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .navbar a:hover {
+      color: #fc0fc0;
+      text-shadow: 0 0 8px #fc0fc0;
+    }
+
+    main {
+      width: 90%;
+      max-width: 1000px;
+      margin-top: 120px;
+      margin-bottom: 80px;
+    }
+
+    .page-title {
+      text-align: center;
+      color: #fc0fc0;
+      margin-bottom: 30px;
+      font-size: 1.6em;
+    }
+
+    /* Collapsible section */
+    .collapse {
+      background: rgba(0,0,0,0.85);
+      border: 3px solid #ffff33;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #ffff33, inset 0 0 10px #fc0fc0;
+      margin-bottom: 25px;
+      overflow: hidden;
+    }
+
+    .collapse-btn {
+      width: 100%;
+      background: transparent;
+      color: white;
+      border: none;
+      text-align: left;
+      padding: 18px;
+      font-size: 1.2em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .collapse-btn:hover {
+      color: #fc0fc0;
+      text-shadow: 0 0 6px #fc0fc0;
+    }
+
+    .collapse-content {
+      display: none;        /* collapsed by default */
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+
+    /* Remove border/shadow from individual chart cards */
+    .chart-card {
+      position: relative;
+      width: 100%;
+      max-width: 350px;
+      aspect-ratio: 1 / 1;
+      margin: 0 auto 30px auto;
+      background: transparent;       /* remove background */
+      box-shadow: none;              /* remove glow */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+
+    .chart-card canvas {
+      width: 100% !important;
+      height: 100% !important;
+      max-height: 100%;
+      max-width: 100%;
+    }
+
+    /* Desktop grid for OR pie charts */
+    @media (min-width: 768px) {
+      .collapse-content {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        justify-items: center;
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+      .collapse-btn {
+        font-size: 1.2em;
+      }
+      main {
+        width: 95%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <a href="home.html" class="logo">Parx Predict</a>
+  <nav class="navbar">
+    <a href="home.html">Home</a>
+    <a href="leaderboard.html">Leaderboard</a>
+    <a href="#" id="logout">Logout</a>
+  </nav>
+</header>
+
+<main class="container">
+
+  <h1 class="page-title">Setlist Trends: Coming Soon</h1>
+
+  <!-- Section 1: OR Pie Charts -->
+  <div id="orSection" class="collapse">
+    <button class="collapse-btn">"Or" Frequencies</button>
+    <div class="collapse-content">
+      <div class="chart-card"><canvas id="chartQ1"></canvas></div>
+      <div class="chart-card"><canvas id="chartQ2"></canvas></div>
+      <div class="chart-card"><canvas id="chartQ6"></canvas></div>
+      <div class="chart-card"><canvas id="chartQ7"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Section 2: Top 5 Most Played Surprise Songs -->
+  <div class="collapse">
+    <button class="collapse-btn">Top 5 Most Played Surprise Songs</button>
+    <div class="collapse-content">
+      <div class="chart-card"><canvas id="songFrequencyChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Section 3: Albums Played Distribution -->
+  <div class="collapse">
+    <button class="collapse-btn">Surprise Song Album Distribution</button>
+    <div class="collapse-content">
+      <div class="chart-card"><canvas id="albumChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Section 4: Surprise Songs by City -->
+  <div class="collapse">
+    <button class="collapse-btn">Surprise Songs By City</button>
+    <div class="collapse-content">
+      <p>Select a city:</p>
+      <select id="cityDropdown"></select>
+      <div class="chart-card"><canvas id="cityChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Section 5: Songs Yet To Be Played -->
+  <div class="collapse">
+    <button class="collapse-btn">Songs Yet To Be Played</button>
+    <div class="collapse-content">
+      <p>Select album to view unplayed songs:</p>
+      <select id="albumDropdown"></select>
+      <div class="chart-card"><canvas id="unplayedAlbumChart"></canvas></div>
+    </div>
+  </div>
+
+</main>
+
+<script type="module" src="setlisttrends.js"></script>
+
+
+</body>
+</html>

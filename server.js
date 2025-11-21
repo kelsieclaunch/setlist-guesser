@@ -52,9 +52,9 @@ const pool = new Pool({
 
 const quizConfigs = {
   norfolk:       { quizId: 3,  showDateISO: '2025-11-15T21:00:00', timezone: 'America/New_York', scoringDelayHours: 0, scoringEnabled: true },
-  philadelphia:  { quizId: 4,  showDateISO: '2025-11-16T21:00:00', timezone: 'America/New_York', scoringDelayHours: 3, scoringEnabled: false },
-  brooklyn:      { quizId: 5,  showDateISO: '2025-11-18T21:00:00', timezone: 'America/New_York', scoringDelayHours: 3, scoringEnabled: false },
-  boston:        { quizId: 6,  showDateISO: '2025-11-20T21:00:00', timezone: 'America/New_York', scoringDelayHours: 3, scoringEnabled: false },
+  philadelphia:  { quizId: 4,  showDateISO: '2025-11-16T21:00:00', timezone: 'America/New_York', scoringDelayHours: 0, scoringEnabled: true },
+  brooklyn:      { quizId: 5,  showDateISO: '2025-11-18T21:00:00', timezone: 'America/New_York', scoringDelayHours: 0, scoringEnabled: true },
+  boston:        { quizId: 6,  showDateISO: '2025-11-20T21:00:00', timezone: 'America/New_York', scoringDelayHours: 0, scoringEnabled: true },
   sayreville:    { quizId: 7,  showDateISO: '2025-11-22T21:00:00', timezone: 'America/New_York', scoringDelayHours: 3, scoringEnabled: false },
   toronto:       { quizId: 8,  showDateISO: '2025-11-23T21:00:00', timezone: 'America/Toronto', scoringDelayHours: 3, scoringEnabled: false },
 
@@ -102,6 +102,39 @@ const answerKeys = {
     q5: ["It Follows", "Sleep Alone", "Swing, Swing"],
     q6: "21 Questions",
     q7: "Reboot"
+
+  },
+
+   philadelphia: {
+    q1: "Peach",
+    q2: "Not Warriors",
+    q3: ["Dizzy", "Violet", "Taste", "Group Chat"],
+    q4: ["Dizzy", "Violet", "Taste", "Group Chat"],
+    q5: ["Dizzy", "Violet", "Taste", "Group Chat"],
+    q6: "21 Questions",
+    q7: "Tantrum"
+
+  },
+
+    brooklyn: {
+    q1: "Telephone",
+    q2: "Gloom Boys",
+    q3: ["Rare", "Natural Blue", "Easy to Hate"],
+    q4: ["Rare", "Natural Blue", "Easy to Hate"],
+    q5: ["Rare", "Natural Blue", "Easy to Hate"],
+    q6: "21 Questions",
+    q7: "Tantrum"
+
+  },
+
+  boston: {
+    q1: "Peach",
+    q2: "Not Warriors",
+    q3: ["Teenage Jealousy", "Worst", "Violet!"],
+    q4: ["Teenage Jealousy", "Worst", "Violet!"],
+    q5: ["Teenage Jealousy", "Worst", "Violet!"],
+    q6: "Lucky People",
+    q7: "Tantrum"
 
   }
 };
@@ -472,6 +505,51 @@ app.get("/quiz/:shortId/results", async (req, res) => {
   const answers = answerKeys[shortId] || null;
 
   res.json({ submission, answers });
+});
+
+// For Setlist Trends
+// pie chart queries
+app.get('/api/orstats', async (req, res) => {
+  const { question } = req.query; // q1, q2, q6, q7
+
+  if (!['q1','q2','q6','q7'].includes(question)) {
+    return res.status(400).json({ error: 'Invalid question' });
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT option_chosen, COUNT(*) AS option_count
+       FROM or_question_stats
+       WHERE question_name = $1
+       GROUP BY option_chosen
+       ORDER BY option_count DESC`,
+      [question]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('OR stats query failed:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+// GET top 5 most played surprise songs (live aggregation)
+app.get('/api/top5songs', async (req, res) => {
+  try {
+    const query = `
+      SELECT s.title, s.album, COUNT(sa.song_id) AS play_count
+      FROM show_answers sa
+      JOIN songs s ON sa.song_id = s.id
+      GROUP BY s.id
+      ORDER BY play_count DESC
+      LIMIT 5;
+    `;
+    const result = await pool.query(query);
+    res.json(result.rows); // array of { title, album, play_count }
+  } catch (err) {
+    console.error('Failed to fetch top 5 songs:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
 });
 
 

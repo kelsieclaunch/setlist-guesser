@@ -55,11 +55,11 @@ const quizConfigs = {
   philadelphia:  { quizId: 4,  showDateISO: '2025-11-16T21:00:00', timezone: 'America/New_York', scoringDelayHours: 0, scoringEnabled: true },
   brooklyn:      { quizId: 5,  showDateISO: '2025-11-18T21:00:00', timezone: 'America/New_York', scoringDelayHours: 0, scoringEnabled: true },
   boston:        { quizId: 6,  showDateISO: '2025-11-20T21:00:00', timezone: 'America/New_York', scoringDelayHours: 0, scoringEnabled: true },
-  sayreville:    { quizId: 7,  showDateISO: '2025-11-22T21:00:00', timezone: 'America/New_York', scoringDelayHours: 3, scoringEnabled: false },
-  toronto:       { quizId: 8,  showDateISO: '2025-11-23T21:00:00', timezone: 'America/Toronto', scoringDelayHours: 3, scoringEnabled: false },
+  sayreville:    { quizId: 7,  showDateISO: '2025-11-22T21:00:00', timezone: 'America/New_York', scoringDelayHours: 0, scoringEnabled: true },
+  toronto:       { quizId: 8,  showDateISO: '2025-11-23T21:00:00', timezone: 'America/Toronto', scoringDelayHours: 0, scoringEnabled: true },
 
-  pittsburgh:    { quizId: 9,  showDateISO: '2025-11-25T21:00:00', timezone: 'America/New_York', scoringDelayHours: 3, scoringEnabled: false },
-  detroit:       { quizId: 10, showDateISO: '2025-11-26T21:00:00', timezone: 'America/New_York', scoringDelayHours: 3, scoringEnabled: false },
+  pittsburgh:    { quizId: 9,  showDateISO: '2025-11-25T21:00:00', timezone: 'America/New_York', scoringDelayHours: 0, scoringEnabled: true },
+  detroit:       { quizId: 10, showDateISO: '2025-11-26T21:00:00', timezone: 'America/New_York', scoringDelayHours: 0, scoringEnabled: true },
   chicago:       { quizId: 11, showDateISO: '2025-11-28T21:00:00', timezone: 'America/Chicago', scoringDelayHours: 3, scoringEnabled: false },
   columbus:      { quizId: 12, showDateISO: '2025-11-29T21:00:00', timezone: 'America/New_York', scoringDelayHours: 3, scoringEnabled: false },
 
@@ -135,6 +135,50 @@ const answerKeys = {
     q5: ["Teenage Jealousy", "Worst", "Violet!"],
     q6: "Lucky People",
     q7: "Tantrum"
+
+  },
+
+  sayreville : {
+    q1: "Peach",
+    q2: "Gloom Boys",
+    q3: ["Snow Globe", "We Need To Talk", "Mad All The Time", "Fantastic"],
+    q4: ["Snow Globe", "We Need To Talk", "Mad All The Time", "Fantastic"],
+    q5: ["Snow Globe", "We Need To Talk", "Mad All The Time", "Fantastic"],
+    q6: "Lucky People",
+    q7: "Tantrum"
+
+  },
+
+    toronto : {
+    q1: "Telephone",
+    q2: "Gloom Boys",
+    q3: ["Closer", "Not Warriors", "Silver", "Call Me Beep Me"],
+    q4: ["Closer", "Not Warriors", "Silver", "Call Me Beep Me"],
+    q5: ["Closer", "Not Warriors", "Silver", "Call Me Beep Me"],
+    q6: "21 Questions",
+    q7: "Tantrum"
+
+  },
+
+    pittsburgh : {
+    q1: "Peach",
+    q2: "Not Warriors",
+    q3: ["Easy To Hate", "Sleep Alone", "Powerless"],
+    q4: ["Easy To Hate", "Sleep Alone", "Powerless"],
+    q5: ["Easy To Hate", "Sleep Alone", "Powerless"],
+    q6: "21 Questions",
+    q7: "Reboot"
+
+  },
+
+    detroit : {
+    q1: "Peach",
+    q2: "Gloom Boys",
+    q3: [],
+    q4: [],
+    q5: [],
+    q6: ["Lucky People", "21 Questions"],
+    q7: "Reboot"
 
   }
 };
@@ -320,14 +364,22 @@ function scoreSubmissionForQuiz(shortId, submission) {
   let score = 0;
 
   // Radio questions (q1,q2,q6,q7) — 1 point each
-  const singleQs = ["q1","q2","q6","q7"];
+  const singleQs = ["q1", "q2", "q6", "q7"];
   singleQs.forEach(q => {
     const userVal = submission[q];
     const correct = key[q];
     if (userVal && correct) {
       const u = userVal.toString().trim().toLowerCase();
-      const c = correct.toString().trim().toLowerCase();
-      if (u === c) score += 1;
+
+      if (Array.isArray(correct)) {
+        // Case: multiple accepted answers (like Q6 now)
+        const normalizedCorrect = correct.map(a => a.toString().trim().toLowerCase());
+        if (normalizedCorrect.includes(u)) score += 1;
+      } else {
+        // Normal single-answer case
+        const c = correct.toString().trim().toLowerCase();
+        if (u === c) score += 1;
+      }
     }
   });
 
@@ -409,7 +461,7 @@ app.post("/quiz/:shortId/compute-scores", async (req, res) => {
 
 
 
-// GET leaderboard for a specific show (top 3)
+// GET leaderboard for a specific show (top 5)
 app.get("/leaderboard/:shortId", async (req, res) => {
   const { shortId } = req.params;
   const cfg = getQuizConfig(shortId);
@@ -425,7 +477,7 @@ app.get("/leaderboard/:shortId", async (req, res) => {
       JOIN users u ON s.user_id = u.id
       WHERE s.quiz_id = $1 AND s.score IS NOT NULL
       ORDER BY s.score DESC, s.timestamp ASC
-      LIMIT 3;
+      LIMIT 5;
     `;
 
     const result = await pool.query(query, [cfg.quizId]);
@@ -433,7 +485,7 @@ app.get("/leaderboard/:shortId", async (req, res) => {
     res.json({
       shortId,
       quizId: cfg.quizId,
-      top3: result.rows
+      top5: result.rows
     });
 
   } catch (err) {
@@ -460,7 +512,7 @@ app.get("/api/quizzes", async (req, res) => {
         JOIN users u ON s.user_id = u.id
         WHERE s.quiz_id=$1 AND s.score IS NOT NULL
         ORDER BY s.score DESC, s.timestamp ASC
-        LIMIT 3;
+        LIMIT 5;
       `;
       const result = await pool.query(query, [cfg.quizId]);
       leaderboard = result.rows;
@@ -507,6 +559,8 @@ app.get("/quiz/:shortId/results", async (req, res) => {
   res.json({ submission, answers });
 });
 
+
+
 // For Setlist Trends
 // pie chart queries
 app.get('/api/orstats', async (req, res) => {
@@ -542,16 +596,126 @@ app.get('/api/top5songs', async (req, res) => {
       JOIN songs s ON sa.song_id = s.id
       GROUP BY s.id
       ORDER BY play_count DESC
-      LIMIT 5;
+      LIMIT 10;
     `;
     const result = await pool.query(query);
     res.json(result.rows); // array of { title, album, play_count }
   } catch (err) {
-    console.error('Failed to fetch top 5 songs:', err);
+    console.error('Failed to fetch top 10 songs:', err);
     res.status(500).json({ error: 'Database error' });
   }
 });
 
+// top 5 most guessed (live aggregation)
+
+app.get('/api/top-guessed-songs', async (req, res) => {
+  try {
+    const query = `
+      SELECT guess AS song, COUNT(*) AS count
+      FROM (
+        SELECT q3 AS guess FROM submissions
+        UNION ALL
+        SELECT q4 AS guess FROM submissions
+        UNION ALL
+        SELECT q5 AS guess FROM submissions
+      ) AS all_guesses
+      WHERE guess IS NOT NULL AND guess <> ''
+      GROUP BY guess
+      ORDER BY count DESC
+      LIMIT 10;
+    `;
+
+    const result = await pool.query(query);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching top guessed songs:', error);
+    res.status(500).json({ error: 'Server error fetching top guessed songs' });
+  }
+});
+
+
+
+//get album counts for horizontal bar chart (live aggregation)
+app.get('/api/album-distribution', async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                s.album AS album_name,
+                COUNT(*) AS play_count
+            FROM show_answers sa
+            JOIN songs s ON sa.song_id = s.id
+            GROUP BY s.album
+            ORDER BY play_count DESC;
+        `;
+        const result = await pool.query(query);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching album distribution', error);
+        res.status(500).json({ error: 'Failed to fetch album distribution' });
+    }
+});
+
+// Get all distinct cities with shows that have already happened
+app.get("/api/cities", async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT DISTINCT city
+       FROM show_answers
+       WHERE show_date <= CURRENT_DATE
+       ORDER BY city ASC`
+    );
+    res.json(result.rows.map(r => r.city));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch cities" });
+  }
+});
+
+
+// surprise songs by city
+app.get("/api/songs-by-city", async (req, res) => {
+  const { city } = req.query;
+  try {
+    const result = await pool.query(
+      `SELECT songs.title, songs.album
+      FROM show_answers
+      LEFT JOIN songs ON show_answers.song_id = songs.id
+      WHERE show_answers.city = $1
+      ORDER BY show_answers.show_date ASC`,
+      [city]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch songs by city" });
+  }
+});
+
+// unplayed songs
+
+app.get('/api/unplayed-songs', async (req, res) => {
+  const { album } = req.query;
+  if (!album) return res.status(400).json({ error: 'Album parameter is required' });
+
+  try {
+    const result = await pool.query(
+      `SELECT s.id, s.title
+       FROM songs s
+       WHERE s.album = $1
+       AND s.id NOT IN (
+         SELECT DISTINCT song_id FROM show_answers
+         WHERE song_id IS NOT NULL
+       )
+       ORDER BY s.title ASC`,
+      [album]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching unplayed songs' });
+  }
+});
 
 // Serve front-end (public)
 app.use(express.static(path.join(__dirname, "public")));
@@ -567,4 +731,5 @@ app.get(/^\/(?!login|register|profile|logout|quiz).*$/, (req, res) => {
 // start
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 

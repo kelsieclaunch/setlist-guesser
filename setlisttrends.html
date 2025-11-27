@@ -7,6 +7,7 @@
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 
   <style>
     body {
@@ -101,11 +102,12 @@
       text-shadow: 0 0 6px #fc0fc0;
     }
 
+    /* Always use 2x2 grid for OR pie charts */
     .collapse-content {
-      display: none;        /* collapsed by default */
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 20px;
-      justify-content: center;
+      justify-items: center;
     }
 
 
@@ -131,15 +133,150 @@
       max-width: 100%;
     }
 
-    /* Desktop grid for OR pie charts */
-    @media (min-width: 768px) {
-      .collapse-content {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        justify-items: center;
-      }
+    #albumBarChart {
+      width: 100% !important;
+      height: 300px !important;
     }
+
+    /* .top5-section {
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+      justify-content: space-between;
+      width: 100%;
+      padding: 10px 15px;
+      box-sizing: border-box;
+    } */
+
+    /* .top5-section ol { */
+      /* padding-left: 30px; push list numbers away from edge */
+      /* margin-top: 10px;
+      margin-bottom: 0;
+    } */
+
+    /* .top5-section li {
+      margin-bottom: 6px;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+    } */
+
+    .section2-content {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr; /* list smaller, chart bigger */
+      gap: 20px;
+      align-items: start;
+      width: 100%;
+      padding: 15px;
+      box-sizing: border-box;
+    }
+
+    .section2-content .chart-card {
+      width: 100% !important;          /* force chart to fill its container */
+      min-width: 0;                     /* prevent overflow on mobile */
+    }
+
+    #topPlayedList {
+      padding-right: 0px;             /* Give some breathing room on right */
+    }
+
+    .section2-content ol li {
+      margin-bottom: 14px;             /* Better list spacing */
+      line-height: 1.5;
+    }
+
+    .chart-card canvas#albumBarChart {
+      width: 100% !important;   /* stay inside container */
+      height: 360px !important; 
+      margin-left: 0;            /* no negative margin */
+    }
+
+   .section3-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;  /* Two equal columns */
+      gap: 25px;
+      width: 100%;
+    }
+
+    .section3-content ol li {
+      margin-bottom: 12px;  /* Good spacing */
+      line-height: 1.4;
+    }
+
+    .pie-chart {
+      max-width: 280px;   /* Smaller size only for pie charts */
+      aspect-ratio: 1 / 1;
+    }
+
+
+    .city-select-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;                /* space between label and dropdown */
+    }
+
+    .city-songs-row {
+      display: flex;
+      justify-content: center;  /* center the cards row */
+      flex-wrap: wrap;          /* allow multiple cards to wrap nicely */
+      gap: 15px;                /* space between cards */
+    }
+
+    .song-card {
+      padding: 10px 12px;
+      border: 2px solid #fff;
+      border-radius: 8px;
+      text-align: center;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      min-width: 120px;         /* optional: enforce some width for cards */
+    }
+
+    .song-card div:last-child {
+      color: white;
+      font-style: italic;       /* album label */
+    }
+
+    .section4-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;      /* center everything horizontally */
+      gap: 15px;                /* space between dropdown row and cards */
+      padding: 15px;            /* give breathing room from edges */
+    }
+
+    .unplayed-songs-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
+    /* Section 5 layout (mirrors Section 4) */
+    .section5-content {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .album-select-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    /* Cards row - match Section 4 card layout */
+    .album-songs-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      padding: 15px 20px 25px; /* top | left/right | bottom */
+      box-sizing: border-box;
+    }
+
+
 
     /* Responsive adjustments */
     @media (max-width: 480px) {
@@ -148,6 +285,54 @@
       }
       main {
         width: 95%;
+      }
+      .section3-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+      .chart-card {
+        max-width: 150px;
+        margin-bottom: 15px;
+      }
+
+      .pie-chart {
+        max-width: 130px;
+      }
+    }
+
+    /* Prevent stacking on mobile */
+    @media (max-width: 600px) {
+      /* Hide bar chart on mobile */
+      .section2-content .chart-card {
+        display: none;
+      }
+
+      /* Make list take full width */
+      .section2-content {
+        grid-template-columns: 1fr;
+        gap: 0; /* optional: no gap since there's only one column */
+      }
+
+       /* Most Guessed Surprise Songs: single column on mobile */
+      .section3-content {
+        grid-template-columns: 1fr;
+        gap: 15px; /* optional spacing between items */
+      }
+
+      /* Optional: adjust list padding inside the column */
+      .section3-content ol {
+        padding-left: 20px;
+      }
+
+      .chart-card canvas#albumBarChart {
+        width: 115% !important;
+        margin-left: -15px;
+        height: 320px !important;
+      }
+
+      .album-select-row {
+        flex-direction: row;
+        justify-content: center;
       }
     }
   </style>
@@ -165,52 +350,83 @@
 
 <main class="container">
 
-  <h1 class="page-title">Setlist Trends: Coming Soon</h1>
+  <h1 class="page-title">Setlist Trends</h1>
+
+  <!-- Section 3: Most Guessed Surprise Songs -->
+  <div class="collapse">
+    <button class="collapse-btn">Most Guessed Surprise Songs</button>
+    <div class="collapse-content section3-content" id="topGuessedContainer">
+      <!-- JS populates two columns -->
+    </div>
+  </div>
 
   <!-- Section 1: OR Pie Charts -->
   <div id="orSection" class="collapse">
     <button class="collapse-btn">"Or" Frequencies</button>
-    <div class="collapse-content">
-      <div class="chart-card"><canvas id="chartQ1"></canvas></div>
-      <div class="chart-card"><canvas id="chartQ2"></canvas></div>
-      <div class="chart-card"><canvas id="chartQ6"></canvas></div>
-      <div class="chart-card"><canvas id="chartQ7"></canvas></div>
+    <div class="collapse-content pie-chart-grid">
+      <div class="chart-card pie-chart"><canvas id="chartQ1"></canvas></div>
+      <div class="chart-card pie-chart"><canvas id="chartQ2"></canvas></div>
+      <div class="chart-card pie-chart"><canvas id="chartQ6"></canvas></div>
+      <div class="chart-card pie-chart"><canvas id="chartQ7"></canvas></div>
     </div>
   </div>
 
-  <!-- Section 2: Top 5 Most Played Surprise Songs -->
+
+
+  <!-- Section 2: Most Played Surprise Songs -->
   <div class="collapse">
-    <button class="collapse-btn">Top 5 Most Played Surprise Songs</button>
-    <div class="collapse-content">
-      <div class="chart-card"><canvas id="songFrequencyChart"></canvas></div>
+    <button class="collapse-btn">Most Played Surprise Songs</button>
+    <div class="collapse-content section2-content">
+      <!-- Left: Top 5 list -->
+      <div id="topPlayedList"></div>
+
+      <!-- Right: Horizontal bar chart showing albums -->
+      <div class="chart-card" >
+        <canvas id="albumBarChart"></canvas>
+      </div>
     </div>
   </div>
 
-  <!-- Section 3: Albums Played Distribution -->
-  <div class="collapse">
-    <button class="collapse-btn">Surprise Song Album Distribution</button>
-    <div class="collapse-content">
-      <div class="chart-card"><canvas id="albumChart"></canvas></div>
-    </div>
-  </div>
+
 
   <!-- Section 4: Surprise Songs by City -->
   <div class="collapse">
     <button class="collapse-btn">Surprise Songs By City</button>
-    <div class="collapse-content">
-      <p>Select a city:</p>
-      <select id="cityDropdown"></select>
-      <div class="chart-card"><canvas id="cityChart"></canvas></div>
-    </div>
+      <div class="collapse-content section4-content">
+        <div class="city-select-row">
+          <label for="cityDropdown">Select a city:</label>
+          <select id="cityDropdown"></select>
+        </div>
+        <div id="citySongsContainer" class="city-songs-row"></div>
+      </div>
   </div>
 
-  <!-- Section 5: Songs Yet To Be Played -->
+
+  <!-- Section 5: Unplayed Songs -->
   <div class="collapse">
-    <button class="collapse-btn">Songs Yet To Be Played</button>
-    <div class="collapse-content">
-      <p>Select album to view unplayed songs:</p>
-      <select id="albumDropdown"></select>
-      <div class="chart-card"><canvas id="unplayedAlbumChart"></canvas></div>
+    <button class="collapse-btn">Songs Yet to Be Played</button>
+    <div class="collapse-content section5-content">
+      
+      <!-- Dropdown row -->
+      <div class="album-select-row">
+        <label for="albumSelect">Select an album:</label>
+        <select id="albumSelect">
+          <option value="">-- Choose an album --</option>
+          <option>Airplane Conversations</option>
+          <option>Black Light</option>
+          <option>Cluster</option>
+          <option>Double Dare</option>
+          <option>Entertainment</option>
+          <option>Fandom</option>
+          <option>Greatest Hits</option>
+          <option>Intellectual Property</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <!-- Songs container (cards) -->
+      <div id="unplayedSongsContainer" class="album-songs-row"></div>
+
     </div>
   </div>
 

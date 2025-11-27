@@ -153,21 +153,46 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const cDiv = document.createElement("div");
       cDiv.className = "q-row";
-      cDiv.innerHTML = `<span class="q-label">${q.toUpperCase()}</span>${correctVal}`;
+
+      if (Array.isArray(correctVal)) {
+        cDiv.innerHTML = `<span class="q-label">${q.toUpperCase()}</span>
+          <ul style="margin:0; padding-left:18px;">
+            ${correctVal.map(v => `<li>${v}</li>`).join("")}
+          </ul>`;
+      } else {
+        cDiv.innerHTML = `<span class="q-label">${q.toUpperCase()}</span>${correctVal}`;
+      }
+
       correctCol.appendChild(cDiv);
     });
 
+    // Surprise song handling
     const userSurprise = submission ? surpriseQs.map(q => submission[q] || "-") : surpriseQs.map(() => "-");
     const correctSurprise = answers ? answers.q3 || [] : [];
 
+    // --- USER COLUMN ---
     const uDiv = document.createElement("div");
     uDiv.className = "q-row";
-    uDiv.innerHTML = `<span class="q-label">Surprise Songs</span><ul class="surprise-songs">${userSurprise.map(s=>`<li>${s}</li>`).join("")}</ul>`;
+    uDiv.innerHTML = `<span class="q-label">Surprise Songs</span>
+                      <ul class="surprise-songs">${userSurprise.map(s=>`<li>${s}</li>`).join("")}</ul>`;
     userCol.appendChild(uDiv);
 
+    // --- CORRECT ANSWER COLUMN ---
     const cDiv = document.createElement("div");
     cDiv.className = "q-row";
-    cDiv.innerHTML = `<span class="q-label">Surprise Songs</span><ul class="surprise-songs">${correctSurprise.map(s=>`<li>${s}</li>`).join("")}</ul>`;
+
+    if (!correctSurprise || correctSurprise.length === 0 || correctSurprise.every(s => !s)) {
+      // No surprise songs
+      cDiv.innerHTML = `<span class="q-label">Surprise Songs</span>
+                        <p style="color:#fc0fc0; font-style:italic; margin-top:6px;">
+                          No surprise songs were played at this show.
+                        </p>`;
+    } else {
+      // Songs exist
+      cDiv.innerHTML = `<span class="q-label">Surprise Songs</span>
+                        <ul class="surprise-songs">${correctSurprise.map(s=>`<li>${s}</li>`).join("")}</ul>`;
+    }
+
     correctCol.appendChild(cDiv);
 
   } catch(err) {

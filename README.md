@@ -37,13 +37,17 @@ Hosting: Google Cloud Run, Docker
 ##### Results Page
 <img src="assets/results_page.png" width="600" alt="Results page showing user's guesses compared to correct answers with score display" />
 
+#### Setlist Trends
+<img src="assets/setlist_trends_1.png" width="600" alt="Setlist Trends page showing most guessed surprise songs and pie charts representing the 'or' questions" />
+<img src="assets/setlist_trends_2.png" width="600" alt="Setlist Trends page showing most played surprise songs, surprise songs by city, and songs yet to be played" />
+
 ### Current Impact
-- 80+ registered users
+- 90+ registered users
 - Supports multiple tour dates dynamically
 
 ### Future Enhancement
 - Support for multiple tour legs (UK/EU dates)
-- Show popularity of past surprise songs, currently being implemented in setlisttrends.html/setlisttrends.js
+- Setlist Trends in navbar, condensed navbar
 
 ### Acknowledgements
 - Inspired by SwiftAlert/Mastermind for The Eras Tour

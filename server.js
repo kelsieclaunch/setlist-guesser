@@ -81,19 +81,10 @@ const quizConfigs = {
 
 
 
-// ANSWER KEYS (for scoring) — adapt per show
+// ANSWER KEYS for scoring
 const answerKeys = {
 
-  // Washington DC (example placeholder; replace real answers after show)
-  // dc: {
-  //   q1: "Peach",
-  //   q2: "Not Warriors",
-  //   q3: ["Violet","What We Do For Fun","Closer"],
-  //   q4: ["Violet","What We Do For Fun","Closer"],
-  //   q5: ["Violet","What We Do For Fun","Closer"],
-  //   q6: "21 Questions",
-  //   q7: "Tantrum"
-  // }
+
   norfolk: {
     q1: "Peach",
     q2: "Not Warriors",

@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let profile = null;
 
-  // Define quiz questions (replicating DC style)
+  // Define quiz questions 
   const quizQuestions = {
     default: {
       title: "Quiz",
@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   };
 
-  // You can add specific quiz titles here
+  // specific quiz titles
   const quizTitles = {
     norfolk: "Norfolk 11/15",
     philadelphia: "Philadelphia 11/16",

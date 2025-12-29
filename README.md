@@ -15,11 +15,11 @@ An interactive full-stack web application where fans predict concert setlists, s
 - Leaderboard displaying top-scoring participants
 
 ## Tech Stack
-Frontend: HTML, CSS, JavaScript
-Backend: Node.js, Express
-Database: PostgreSQL via Cloud SQL
-Auth: Express session, bcrypt
-Hosting: Google Cloud Run, Docker
+- Frontend: HTML, CSS, JavaScript
+- Backend: Node.js, Express
+- Database: PostgreSQL via Cloud SQL
+- Auth: Express session, bcrypt
+- Hosting: Google Cloud Run, Docker
 
 ## Screenshots
 ##### Login Page
@@ -42,7 +42,7 @@ Hosting: Google Cloud Run, Docker
 <img src="assets/setlist_trends_2.png" width="600" alt="Setlist Trends page showing most played surprise songs, surprise songs by city, and songs yet to be played" />
 
 ### Current Impact
-- 90+ registered users
+- 120+ registered users
 - Supports multiple tour dates dynamically
 
 ### Future Enhancement
